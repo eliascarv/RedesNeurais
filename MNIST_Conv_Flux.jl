@@ -23,7 +23,7 @@ xtrain_tensor = batch(preprocess.(images_train))
 xtest_tensor = batch(preprocess.(images_test))
 
 # Adicionando a camada de channel
-xtrain = unsqueeze(xtest_tensor, 3)
+xtrain = unsqueeze(xtrain_tensor, 3)
 xtest = unsqueeze(xtest_tensor, 3)
 
 # Ou em apenas um comando:
@@ -31,8 +31,8 @@ xtest = unsqueeze(xtest_tensor, 3)
 # xtest = cat(preprocess.(images_test)..., dims = 4)
 
 # Convertendo o vetor de labels em um vetor onehot
-ytrain = onehotbatch(ytrain, 0:9)
-ytest = onehotbatch(ytest, 0:9)
+ytrain = onehotbatch(labels_train, 0:9)
+ytest = onehotbatch(labels_test, 0:9)
 
 # Declarando o modelo
 model = Chain(
@@ -49,7 +49,7 @@ model = Chain(
     flatten,
     Dense(256, 10, relu),
     Dropout(0.5),
-    Dense(10, softmax)
+    Dense(10, 10), softmax
 )
 
 # Função de perda para o treinamento do modelo
