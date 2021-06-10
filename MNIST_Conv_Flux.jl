@@ -38,23 +38,24 @@ ytest = onehotbatch(labels_test, 0:9)
 
 # Declarando o modelo
 model = Chain(
-    Conv((5, 5), 1 => 32, relu, pad = SamePad()),
-    Conv((5, 5), 32 => 32, relu, pad = SamePad()),
+    Conv((5, 5), 1 => 32, relu),
+    Conv((5, 5), 32 => 32, relu),
     MaxPool((2, 2)),
     Dropout(0.25),
 
-    Conv((3, 3), 32 => 64, relu, pad = SamePad()),
-    Conv((3, 3), 64 => 64, relu, pad = SamePad()),
+    Conv((3, 3), 32 => 64, relu),
+    Conv((3, 3), 64 => 64, relu),
     MaxPool((2, 2), stride = (2, 2)),
     Dropout(0.25),
 
     flatten,
-    Dense(3136, 256, relu),
+    Dense(576, 256, relu),
     Dropout(0.5),
     Dense(256, 10),
     softmax
 )
 
+# Com SamePad fica 3136 no lugar de 576
 model(Float32.(rand(28, 28, 1, 1))) # Testando o tamanho do input
 
 # Função de perda para o treinamento do modelo
