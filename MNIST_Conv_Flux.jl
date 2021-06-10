@@ -4,8 +4,10 @@ using Flux: batch, unsqueeze, onehotbatch
 using Flux.Losses: logitcrossentropy
 using Flux.Data: DataLoader
 using Flux.Data.MNIST
-using Statistics
+using Statistics, Random
 using BSON: @save
+
+Random.seed!(2)
 
 #Carregando os dados de treino
 images_train = MNIST.images(:train)
@@ -57,7 +59,7 @@ loss(x, y) = logitcrossentropy(model(x), y)
 # Prâmetros do modelo
 ps = params(model)
 # Carregando os dados de treino
-train = DataLoader((xtrain, ytrain), batchsize = 3000, shuffle = true)
+train = DataLoader((xtrain, ytrain), batchsize = 300, shuffle = true)
 # Escolhendo o otimizador
 opt = RMSProp()
 
