@@ -49,10 +49,13 @@ model = Chain(
     Dropout(0.25),
 
     flatten,
-    Dense(256, 10, relu),
+    Dense(3136, 256, relu),
     Dropout(0.5),
-    Dense(10, 10), softmax
+    Dense(256, 10),
+    softmax
 )
+
+model(Float32.(rand(28, 28, 1, 1))) # Testando o tamanho do input
 
 # Função de perda para o treinamento do modelo
 loss(x, y) = logitcrossentropy(model(x), y)
