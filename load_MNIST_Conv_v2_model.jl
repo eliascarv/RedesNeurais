@@ -5,11 +5,11 @@ using BSON: @load
 images = MNIST.images(:test)
 labels = MNIST.labels(:test)
 
-@load "MNIST_model.bson" model
+@load "MNIST_Conv_v2_model.bson" model
 
 function prediction(img)
-    input = Float32.(img)[:]
-    pred_vector = model(input) 
+    input = cat(Float32.(img), dims = 4)
+    pred_vector = model(input)[:] 
     pred_val = findfirst(x -> x == maximum(pred_vector), pred_vector) - 1
     return pred_val
 end
