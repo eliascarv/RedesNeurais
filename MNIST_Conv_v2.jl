@@ -88,5 +88,5 @@ ŷtest = model(xtest)
 accuracy(ŷtest, ytest)
 
 # Macro para salvar o modelo já treinado no formato BSON
-# Acurácia de 0.9832 na base de teste
+# Acurácia de 0.9901 na base de teste
 @save "MNIST_Conv_v2_model.bson" model
