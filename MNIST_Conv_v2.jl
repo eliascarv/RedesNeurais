@@ -77,7 +77,7 @@ end
 evalcb() = println("Train loss: $(eval_loss(train)) | Test loss: $(eval_loss(test))")
 throttle_cb = throttle(evalcb, 15) # Exiba a loss a cada 15 segundos
 
-# Treinando o modelo com 30 épocas (qnt de treinos)
+# Treinando o modelo com 15 épocas (qnt de treinos)
 @epochs 15 train!(loss, ps, train, opt, cb = throttle_cb)
 
 # Função para medir a acurácia do modelo

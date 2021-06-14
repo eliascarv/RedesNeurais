@@ -51,35 +51,42 @@ model = Chain(
     flatten,
     Dense(576, 256, relu),
     Dropout(0.5),
-    Dense(256, 10),
-    softmax
+    Dense(256, 10)
 )
 
 # Com SamePad fica 3136 no lugar de 576
-model(Float32.(rand(28, 28, 1, 1))) # Testando o tamanho do input
 
 # Função de perda para o treinamento do modelo
 loss(x, y) = logitcrossentropy(model(x), y)
 # Prâmetros do modelo
 ps = params(model)
-# Carregando os dados de treino
-train = DataLoader((xtrain, ytrain), batchsize = 300, shuffle = true)
+# Carregando os dados de treino e teste
+train = DataLoader((xtrain, ytrain), batchsize = 200, shuffle = true)
+test = DataLoader((xtest, ytest), batchsize = 200)
 # Escolhendo o otimizador
 opt = RMSProp()
 
 # Primiero treinamento (mais demorado)
 train!(loss, ps, train, opt)
 
-# Função para exibir o andamento do treinamento
-# function upd_loss()
-#     loss_train = loss(xtrain, ytrain)
-#     loss_test = loss(xtest, ytest)
-#     println("Train loss: $(round(loss_train, digits = 6)) | Test loss: $(round(loss_test, digits = 6))")
-# end
-# throtle_cb = throttle(upd_loss, 1) # Função que exibe o resultado de upd_loss() no REPL a cada segundo (1s)
+# Função para avaliar a loss do modelo
+function eval_loss(loader)
+    loss_sum = 0.0
+    batch_tot = 0
+    for batch in loader
+        x, y = batch
+        loss_sum += loss(x, y) * size(x)[end]
+        batch_tot += size(x)[end]
+    end
+    return round(loss_sum/batch_tot, digits = 4)
+end
 
-# Treinando o modelo com 30 épocas (qnt de treinos)
-@epochs 30 train!(loss, ps, train, opt)
+# Função para exibir a loss do modelo
+evalcb() = println("Train loss: $(eval_loss(train)) | Test loss: $(eval_loss(test))")
+throttle_cb = throttle(evalcb, 15) # Exiba a loss a cada 15 segundos
+
+# Treinando o modelo com 10 épocas (qnt de treinos)
+@epochs 10 train!(loss, ps, train, opt, cb = throttle_cb)
 
 # Função para medir a acurácia do modelo
 accuracy(ŷ, y) = mean(onecold(ŷ) .== onecold(y)) 
