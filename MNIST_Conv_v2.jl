@@ -49,7 +49,7 @@ model = Chain(
 )
 
 # Função de perda para o treinamento do modelo
-loss(ŷ, y) = logitcrossentropy(ŷ, y)
+loss(x, y) = logitcrossentropy(model(x), y)
 # Prâmetros do modelo
 ps = params(model)
 # Carregando os dados de treino e teste
@@ -62,24 +62,23 @@ opt = ADAM()
 train!(loss, ps, train, opt)
 
 # Função para avaliar a loss do modelo
-function eval_loss(loader, model)
-    loss_sum = 0f0
+function eval_loss(loader)
+    loss_sum = 0.0
     batch_tot = 0
     for batch in loader
         x, y = batch
-        ŷ = model(x)
-        loss_sum += loss(ŷ, y) * size(x)[end]
+        loss_sum += loss(x, y) * size(x)[end]
         batch_tot += size(x)[end]
     end
     return round(loss_sum/batch_tot, digits = 4)
 end
 
 # Função para exibir a loss do modelo
-evalcb() = @show("Test loss: ", eval_loss(test, model))
+evalcb() = @show("Test loss: ", eval_loss(test))
 throttled_cb = throttle(evalcb, 5) # Exiba a loss a cada 5 segundos
 
 # Treinando o modelo com 30 épocas (qnt de treinos)
-@epochs 30 train!(loss, ps, train, opt, cb = throttle_cb)
+@epochs 30 train!(loss, ps, train, opt, cb = throttled_cb)
 
 # Função para medir a acurácia do modelo
 accuracy(ŷ, y) = mean(onecold(ŷ) .== onecold(y)) 
