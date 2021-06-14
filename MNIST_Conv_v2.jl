@@ -49,7 +49,7 @@ model = Chain(
 )
 
 # Função de perda para o treinamento do modelo
-loss(x, y) = logitcrossentropy(model(x), y)
+loss(ŷ, y) = logitcrossentropy(ŷ, y)
 # Prâmetros do modelo
 ps = params(model)
 # Carregando os dados de treino e teste
@@ -79,7 +79,7 @@ evalcb() = @show("Test loss: ", eval_loss(test, model))
 throttled_cb = throttle(evalcb, 5) # Exiba a loss a cada 5 segundos
 
 # Treinando o modelo com 30 épocas (qnt de treinos)
-@epochs 30 train!(loss, ps, train, opt)
+@epochs 30 train!(loss, ps, train, opt, cb = throttle_cb)
 
 # Função para medir a acurácia do modelo
 accuracy(ŷ, y) = mean(onecold(ŷ) .== onecold(y)) 
