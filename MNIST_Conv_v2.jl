@@ -74,8 +74,9 @@ function eval_loss(loader, model)
     return round(loss_sum/batch_tot, digits = 4)
 end
 
+# Função para exibir a loss do modelo
 evalcb() = @show("Test loss: ", eval_loss(test, model))
-throttled_cb = throttle(evalcb, 5)
+throttled_cb = throttle(evalcb, 5) # Exiba a loss a cada 5 segundos
 
 # Treinando o modelo com 30 épocas (qnt de treinos)
 @epochs 30 train!(loss, ps, train, opt)
