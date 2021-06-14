@@ -74,11 +74,11 @@ function eval_loss(loader)
 end
 
 # Função para exibir a loss do modelo
-evalcb() = @show("Test loss: ", eval_loss(test))
-throttled_cb = throttle(evalcb, 5) # Exiba a loss a cada 5 segundos
+evalcb() = println("Train loss: $(eval_loss(train)) | Test loss: $(eval_loss(test))")
+throttle_cb = throttle(evalcb, 15) # Exiba a loss a cada 15 segundos
 
 # Treinando o modelo com 30 épocas (qnt de treinos)
-@epochs 30 train!(loss, ps, train, opt, cb = throttled_cb)
+@epochs 15 train!(loss, ps, train, opt, cb = throttle_cb)
 
 # Função para medir a acurácia do modelo
 accuracy(ŷ, y) = mean(onecold(ŷ) .== onecold(y)) 
@@ -88,5 +88,5 @@ ŷtest = model(xtest)
 accuracy(ŷtest, ytest)
 
 # Macro para salvar o modelo já treinado no formato BSON
-# Acurácia de 0.9832 na base de teste
+# Acurácia de 0.9901 na base de teste
 @save "MNIST_Conv_v2_model.bson" model
