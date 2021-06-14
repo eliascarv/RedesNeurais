@@ -45,29 +45,37 @@ model = Chain(
     flatten,
     Dense(256, 120, relu), 
     Dense(120, 84, relu), 
-    Dense(84, 10),
-    softmax
+    Dense(84, 10)
 )
 
 # Função de perda para o treinamento do modelo
 loss(x, y) = logitcrossentropy(model(x), y)
 # Prâmetros do modelo
 ps = params(model)
-# Carregando os dados de treino
-train = DataLoader((xtrain, ytrain), batchsize = 3000, shuffle = true)
+# Carregando os dados de treino e teste
+train = DataLoader((xtrain, ytrain), batchsize = 200, shuffle = true)
+test = DataLoader((xtest, ytest), batchsize = 200)
 # Escolhendo o otimizador
 opt = ADAM()
 
 # Primiero treinamento (mais demorado)
 train!(loss, ps, train, opt)
 
-# Função para exibir o andamento do treinamento
-# function upd_loss()
-#     loss_train = loss(xtrain, ytrain)
-#     loss_test = loss(xtest, ytest)
-#     println("Train loss: $(round(loss_train, digits = 6)) | Test loss: $(round(loss_test, digits = 6))")
-# end
-# throtle_cb = throttle(upd_loss, 1) # Função que exibe o resultado de upd_loss() no REPL a cada segundo (1s)
+# Função para avaliar a loss do modelo
+function eval_loss(loader, model)
+    loss_sum = 0f0
+    batch_tot = 0
+    for batch in loader
+        x, y = batch
+        ŷ = model(x)
+        loss_sum += loss(ŷ, y) * size(x)[end]
+        batch_tot += size(x)[end]
+    end
+    return round(loss_sum/batch_tot, digits = 4)
+end
+
+evalcb() = @show("Test loss: ", eval_loss(test, model))
+throttled_cb = throttle(evalcb, 5)
 
 # Treinando o modelo com 30 épocas (qnt de treinos)
 @epochs 30 train!(loss, ps, train, opt)

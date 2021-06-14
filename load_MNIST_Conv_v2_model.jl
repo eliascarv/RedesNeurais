@@ -14,7 +14,7 @@ function prediction(img)
     return pred_val
 end
 
-images[10]
-println("O número da imagem é $(labels[10]).")
+images[200]
+println("O número da imagem é $(labels[200]).")
 
-println("A rede neural prediz que é o número $(prediction(images[10])).")
+println("A rede neural prediz que é o número $(prediction(images[200])).")
