@@ -38,9 +38,9 @@ ytest = onehotbatch(labels_test, 0:9)
 
 # Declarando o modelo
 model = Chain(
-    Conv((5, 5), 1=>6, relu),
+    Conv((5, 5), 1 => 6, relu),
     MaxPool((2, 2)),
-    Conv((5, 5), 6=>16, relu),
+    Conv((5, 5), 6 => 16, relu),
     MaxPool((2, 2)),
     flatten,
     Dense(256, 120, relu), 
@@ -70,7 +70,8 @@ function eval_loss(loader)
         loss_sum += loss(x, y) * size(x)[end]
         batch_tot += size(x)[end]
     end
-    return round(loss_sum/batch_tot, digits = 4)
+    loss = round(loss_sum / batch_tot, digits = 4)
+    return loss
 end
 
 # Função para exibir a loss do modelo
