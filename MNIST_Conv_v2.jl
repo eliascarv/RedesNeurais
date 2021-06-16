@@ -9,11 +9,11 @@ using BSON: @save
 
 Random.seed!(2)
 
-#Carregando os dados de treino
+# Carregando os dados de treino
 images_train = MNIST.images(:train)
 labels_train = MNIST.labels(:train)
 
-#Carregando os dados de teste
+# Carregando os dados de teste
 images_test = MNIST.images(:test)
 labels_test = MNIST.labels(:test)
 
