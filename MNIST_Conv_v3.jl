@@ -71,11 +71,10 @@ function eval_loss(loader)
         loss_sum += loss(x, y) * size(x)[end]
         batch_tot += size(x)[end]
     end
-    loss = round(loss_sum / batch_tot, digits = 4)
-    return loss
+    return round(loss_sum / batch_tot, digits = 4)
 end
 
-# Arrays para salvar a loss a cada chamda da funçõe evalcb()
+# Arrays para salvar a loss a cada chamda da função evalcb()
 const trainloss_array = Float64[]
 const testloss_array = Float64[]
 
