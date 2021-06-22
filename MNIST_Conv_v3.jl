@@ -84,8 +84,8 @@ end
 throttle_cb = throttle(evalcb, 10) # Função que exibe o resultado de upd_loss() no REPL a cada segundo (10s)
 
 # Treinando o modelo com 30 épocas, verificou-se que 15 a 17s épocas seria o ideal. 
-trainloss_array = Float64[]
-testloss_array = Float64[]
+const trainloss_array = Float64[]
+const testloss_array = Float64[]
 @time @epochs 17 train!(loss, ps, train, opt, cb = throttle_cb)
 
 # Função para medir a acurácia do modelo
