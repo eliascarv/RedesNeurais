@@ -70,8 +70,7 @@ function eval_loss(loader)
         loss_sum += loss(x, y) * size(x)[end]
         batch_tot += size(x)[end]
     end
-    loss = round(loss_sum / batch_tot, digits = 4)
-    return loss
+    return round(loss_sum / batch_tot, digits = 4)
 end
 
 # Função para exibir a loss do modelo
