@@ -6,6 +6,7 @@ using Flux.Data: DataLoader
 using Flux.Data.MNIST
 using Statistics, Random
 using BSON: @save
+using Plots
 
 Random.seed!(2)
 
@@ -38,9 +39,9 @@ ytest = onehotbatch(labels_test, 0:9)
 
 # Declarando o modelo
 model = Chain(
-    Conv((5, 5), 1=>6, relu),
+    Conv((5, 5), 1 => 6, relu),
     MaxPool((2, 2)),
-    Conv((5, 5), 6=>16, relu),
+    Conv((5, 5), 6 => 16, relu),
     MaxPool((2, 2)),
     flatten,
     Dense(256, 120, relu), 
@@ -70,7 +71,8 @@ function eval_loss(loader)
         loss_sum += loss(x, y) * size(x)[end]
         batch_tot += size(x)[end]
     end
-    return round(loss_sum/batch_tot, digits = 4)
+    loss = round(loss_sum / batch_tot, digits = 4)
+    return loss
 end
 
 # Arrays para salvar a loss a cada chamda da funçõe evalcb()
@@ -79,11 +81,11 @@ const testloss_array = Float64[]
 
 # Função para exibir a loss do modelo
 function evalcb() 
-    loss_train = eval_loss(train)
-    loss_test = eval_loss(test)
-    push!(trainloss_array, loss_train)
-    push!(testloss_array, loss_test)
-    println("Train loss: $loss_train | Test loss: $loss_test")
+    trainloss = eval_loss(train)
+    testloss = eval_loss(test)
+    push!(trainloss_array, trainloss)
+    push!(testloss_array, testloss)
+    println("Train loss: $trainloss | Test loss: $testloss")
 end
 throttle_cb = throttle(evalcb, 10) # Função que exibe o resultado de evalcb() no REPL a cada segundo (10s)
 
@@ -97,12 +99,12 @@ accuracy(ŷ, y) = mean(onecold(ŷ) .== onecold(y))
 ŷtest = model(xtest)
 accuracy(ŷtest, ytest)
 
-# Macro para salvar o modelo já treinado no formato BSON
-# Acurácia de 0.9884 na base de teste
-@save "MNIST_Conv_v3_model.bson" model
-
-using Plots
+# Visualizando a loss de treino e de teste salva nos arrays durante o treinamento para detectar Overfitting
 plot(2:length(trainloss_array), 
      [trainloss_array[2:end] testloss_array[2:end]], 
      labels = ["Train Loss" "Test Loss"],
      lw = 2)
+
+# Macro para salvar o modelo já treinado no formato BSON
+# Acurácia de 0.9884 na base de teste
+@save "MNIST_Conv_v3_model.bson" model
