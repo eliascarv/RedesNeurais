@@ -73,19 +73,21 @@ function eval_loss(loader)
     return round(loss_sum/batch_tot, digits = 4)
 end
 
+# Arrays para salvar a loss a cada chamda da funçõe evalcb()
+const trainloss_array = Float64[]
+const testloss_array = Float64[]
+
 # Função para exibir a loss do modelo
 function evalcb() 
     loss_train = eval_loss(train)
     loss_test = eval_loss(test)
     push!(trainloss_array, loss_train)
     push!(testloss_array, loss_test)
-    println("Train loss: $(round(loss_train, digits = 6)) | Test loss: $(round(loss_test, digits = 6))")
+    println("Train loss: $loss_train | Test loss: $loss_test")
 end
-throttle_cb = throttle(evalcb, 10) # Função que exibe o resultado de upd_loss() no REPL a cada segundo (10s)
+throttle_cb = throttle(evalcb, 10) # Função que exibe o resultado de evalcb() no REPL a cada segundo (10s)
 
 # Treinando o modelo com 30 épocas, verificou-se que 15 a 17s épocas seria o ideal. 
-const trainloss_array = Float64[]
-const testloss_array = Float64[]
 @time @epochs 17 train!(loss, ps, train, opt, cb = throttle_cb)
 
 # Função para medir a acurácia do modelo
@@ -100,7 +102,7 @@ accuracy(ŷtest, ytest)
 @save "MNIST_Conv_v3_model.bson" model
 
 using Plots
-plot(collect(2:length(trainloss_array)), 
+plot(2:length(trainloss_array), 
      [trainloss_array[2:end] testloss_array[2:end]], 
      labels = ["Train Loss" "Test Loss"],
-     lw=2)
+     lw = 2)
